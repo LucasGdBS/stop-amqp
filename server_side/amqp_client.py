@@ -9,7 +9,7 @@ class AmqpClient:
         self.__virtual_host = config('VIRTUAL_HOST')
         self.__username = config('RABBIT_USERNAME')
         self.__password = config('PASSWORD')
-        self.__connection = self.__create_chanel()
+        self.channel = self.__create_chanel()
 
     def __create_chanel(self):
         connection_parameters = pika.ConnectionParameters(
