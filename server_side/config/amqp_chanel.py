@@ -2,14 +2,14 @@ import pika
 from decouple import config
 
 
-class AmqpClient:
+class AmqpChanel:
     def __init__(self) -> None:
         self.__host = config('HOST')
         self.__port = int(config('PORT'))
         self.__virtual_host = config('VIRTUAL_HOST')
         self.__username = config('RABBIT_USERNAME')
         self.__password = config('PASSWORD')
-        self.channel = self.__create_chanel()
+        self.chanel = self.__create_chanel()
 
     def __create_chanel(self):
         connection_parameters = pika.ConnectionParameters(

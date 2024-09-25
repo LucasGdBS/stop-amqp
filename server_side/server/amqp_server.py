@@ -1,10 +1,10 @@
-from amqp_client import AmqpClient
+from config.amqp_chanel import AmqpChanel
 from typing import Callable, Any, Dict
 import json
 from adedonha import Adedonha
 
 
-class AmqpServer(AmqpClient):
+class AmqpServer(AmqpChanel):
     def __init__(self, queue:str, callback:Callable[..., Any]) -> None:
         super().__init__()
 
@@ -13,11 +13,11 @@ class AmqpServer(AmqpClient):
         self.exchange = 'exchange_pontuacao' # Nome da exchange que será utilizada para enviar as mensagens
 
     def set_queue(self):
-        self.channel.queue_declare(queue=self.queue, durable=True, auto_delete=True)
+        self.chanel.queue_declare(queue=self.queue, durable=True, auto_delete=True)
 
     def set_consume(self):
         self.set_queue()
-        self.channel.basic_consume(
+        self.chanel.basic_consume(
             queue=self.queue,
             on_message_callback=self.callback,
             auto_ack=True
@@ -26,12 +26,12 @@ class AmqpServer(AmqpClient):
     def start_consuming(self):
         print("Jogo iniciado!\nAguardando jogadores...")
         self.set_consume()
-        self.channel.start_consuming()
+        self.chanel.start_consuming()
 
     def send_message(self, message:Dict):
-        self.channel.exchange_declare(exchange=self.exchange, exchange_type='fanout')
+        self.chanel.exchange_declare(exchange=self.exchange, exchange_type='fanout')
 
-        self.channel.basic_publish(
+        self.chanel.basic_publish(
             exchange='exchange_pontuacao',
             routing_key='',
             body=json.dumps(message)
