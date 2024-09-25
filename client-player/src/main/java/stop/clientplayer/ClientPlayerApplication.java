@@ -23,6 +23,7 @@ public class ClientPlayerApplication {
         consumer.setQueueNameAndStartListener(nome);
 
         AmpqClientProducer producer = context.getBean(AmpqClientProducer.class);
+        producer.setQueueName(nome);
 
 
     }
