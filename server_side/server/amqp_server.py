@@ -66,7 +66,7 @@ start = ''
 while start.lower() != 'start':
     start = input('Digite "start" para sortear a letra e iniciar o jogo: ')
 
-sorted_letter = 'B'
+sorted_letter = adedonha.sort_letter()
 server.send_message({'letter': f'{sorted_letter}'})
 server.start_consuming()
 
