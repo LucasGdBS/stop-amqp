@@ -18,7 +18,7 @@ public class ClientPlayerApplication {
         System.out.println("Digite seu nome: ");
         String nome = scanner.nextLine();
 
-        ampq_client_consumer consumer = new ampq_client_consumer();
+        AmpqClientConsumer consumer = new AmpqClientConsumer();
         consumer.set_queue_name(nome);
     }
 
