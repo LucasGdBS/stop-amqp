@@ -32,39 +32,59 @@ class AmqpServer(AmqpChanel):
         self.chanel.exchange_declare(exchange=self.exchange, exchange_type='fanout')
 
         self.chanel.basic_publish(
-            exchange='exchange_pontuacao',
+            exchange=self.exchange,
             routing_key='',
             body=json.dumps(message)
         )
         print(f'Mensagem enviada: {message}')
 
+respostas = []
 
 def callback(ch, method, properties, body:str):
     message = body.decode("utf-8")
-    print(f'Recebendo mensagem: {message}')
-
-    # TODO: Implementar lógica para tratar as respostas recebida
-    if message == 'stop':
-        '''
-        Quando a mensagem stop chegar, o jogo será encerrado e em seguida
-        será recebida uma serie de mensagens com um dicionario no seguinte formato:
-        {"jogador": "nome_do_jogador", "resposta": {"pais": "nome_do_pais", "fruta": "nome_da_fruta", "cor": "nome_da_cor"}}
-        quero que seja calculada a pontuação de cada jogador e enviada uma mensagem com o seguinte formato:
-        [{"jogador": "nome_do_jogador", "pontuacao": 30}
-        {"jogador": "nome_do_jogador", "pontuacao": 20}
-        {"jogador": "nome_do_jogador", "pontuacao": 10},
-        {"Vencedor": "nome_do_jogador", "pontuacao": 30}]
-        '''
-        pass
+    resposta = json.loads(message)
+    respostas.append(message)
 
 
+    if len(respostas) == qnt_pessoas:
+        print('Todas as respostas foram recebidas')
+        pontuacoes = []
 
-server = AmqpServer(queue='data2_queue', callback=callback)
+        for resposta in respostas:
+            try:
+                resposta = json.loads(resposta)
+                pontuacao = adedonha.validar_resposta(sorted_letter, resposta['resposta'])
+                pontuacoes.append({'jogador': resposta['jogador'], 'pontuacao': pontuacao})
+            except KeyError as e:
+                print(f"Chave faltando na resposta: {e}")
+            except ValueError as e:
+                print(f"Formato inválido: {e}")
+
+
+        if pontuacoes:
+            vencedor = max(pontuacoes, key=lambda x: x['pontuacao'])
+            resultado = {
+                'pontuacoes': {p['jogador']: p['pontuacao'] for p in pontuacoes},
+                'vencedor': {
+                    'jogador': vencedor['jogador'],
+                    'pontuacao': vencedor['pontuacao']
+                }
+            }
+            server.send_message(resultado)
+            print(f'Resultado enviado: {resultado}')
+
+
+
+
+server = AmqpServer(queue='response_queue', callback=callback)
 adedonha = Adedonha()
 
-start = ''
-while start.lower() != 'start':
-    start = input('Digite "start" para sortear a letra e iniciar o jogo: ')
+qnt_pessoas = 0
+while True:
+    qnt_pessoas = input('Digite quantas pessoas vão jogar para sortear a letra e iniciar o jogo: ')
+    if qnt_pessoas.isnumeric():
+        qnt_pessoas = int(qnt_pessoas)
+        break
 
 sorted_letter = adedonha.sort_letter()
 server.send_message({'letter': f'{sorted_letter}'})
