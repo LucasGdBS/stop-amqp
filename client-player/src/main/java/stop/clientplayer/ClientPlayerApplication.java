@@ -2,24 +2,23 @@ package stop.clientplayer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import org.springframework.context.ApplicationContext;
 
 import java.util.Scanner;
-
 
 @SpringBootApplication
 public class ClientPlayerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ClientPlayerApplication.class, args);
+        ApplicationContext context = SpringApplication.run(ClientPlayerApplication.class, args);
 
-        // Input para a pessoa digitar seu nome e associar esse nome a fila
+        // Input para a pessoa digitar seu nome e associar esse nome à fila
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite seu nome: ");
         String nome = scanner.nextLine();
 
-        AmpqClientConsumer consumer = new AmpqClientConsumer();
-        consumer.set_queue_name(nome);
+        AmpqClientConsumer consumer = context.getBean(AmpqClientConsumer.class);
+        consumer.setQueueNameAndStartListener(nome);
     }
 
 }
