@@ -81,13 +81,21 @@ def callback(ch, method, properties, body:str):
 server = AmqpServer(queue='response_queue', callback=callback)
 adedonha = Adedonha()
 
-while True:
-    qnt_pessoas = input('Digite quantas pessoas vão jogar para sortear a letra e iniciar o jogo: ')
-    if qnt_pessoas.isnumeric() and int(qnt_pessoas) > 0:
-        qnt_pessoas = int(qnt_pessoas)
-        break
+try:
+    while True:
+        while True:
+            qnt_pessoas = input('Digite quantas pessoas vão jogar para sortear a letra e iniciar o jogo: ')
+            if qnt_pessoas.isnumeric() and int(qnt_pessoas) > 0:
+                qnt_pessoas = int(qnt_pessoas)
+                break
 
-sorted_letter = adedonha.sort_letter()
-server.send_message({'letter': f'{sorted_letter}'})
-server.start_consuming()
+        sorted_letter = adedonha.sort_letter()
+        server.send_message({'letter': f'{sorted_letter}'})
+        server.start_consuming()
 
+        novamente = input('Deseja jogar de novo? 1-Sim 2-Não: ')
+        if novamente != '1':
+            print('Jogo finalizado!')
+            break
+except KeyboardInterrupt:
+    print('Jogo finalizado!')
