@@ -37,7 +37,14 @@ class AmqpServer(AmqpChanel):
             body=json.dumps(message)
         )
         # TODO: formatar saida dos resultados
-        print(f'Mensagem enviada: {message}')
+        if 'vencedor' in message:
+            for jogador, pontuacao in message['pontuacoes'].items():
+                print(f'Jogador {jogador} fez {pontuacao} pontos.')
+
+            vencedor = message['vencedor']['jogador']
+            print(f"Vencedor foi {vencedor}")
+            return
+        print(f'A letra torteada foi: {message["letter"]}')
 
 respostas = []
 
@@ -72,7 +79,6 @@ def callback(ch, method, properties, body:str):
                 }
             }
             server.send_message(resultado)
-            print('Jogo finalizado!')
             server.chanel.stop_consuming()
 
 
