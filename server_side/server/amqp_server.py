@@ -36,6 +36,7 @@ class AmqpServer(AmqpChanel):
             routing_key='',
             body=json.dumps(message)
         )
+        # TODO: formatar saida dos resultados
         print(f'Mensagem enviada: {message}')
 
 respostas = []
@@ -71,7 +72,8 @@ def callback(ch, method, properties, body:str):
                 }
             }
             server.send_message(resultado)
-            print(f'Resultado enviado: {resultado}')
+            print('Jogo finalizado!')
+            server.chanel.stop_consuming()
 
 
 
