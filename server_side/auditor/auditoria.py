@@ -69,7 +69,7 @@ logger.info('Iniciando Auditoria')
 auditoria = Auditoria('auditoria', callback)
 
 exchanges = ['exchange_resposta', 'exchange_pontuacao']
-exchange_types = ['direct', 'fanout']
-routing_keys = ['', '']
+exchange_types = ['topic', 'fanout']
+routing_keys = ['resposta.*', '']
 
 auditoria.start_consuming(exchanges, exchange_types, routing_keys)

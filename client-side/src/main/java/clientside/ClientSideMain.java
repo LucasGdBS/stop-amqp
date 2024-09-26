@@ -38,8 +38,8 @@ public class ClientSideMain extends AmqpChannel {
     }
 
     public void sendMessage(String exchangeName, String routingKey, String message) throws IOException {
-        setExchange(exchangeName, "direct");
-        bindQueueToExchange("response_queue", exchangeName, "");
+        setExchange(exchangeName, "topic");
+        bindQueueToExchange("response_queue", exchangeName, routingKey);
         channel.basicPublish(exchangeName, routingKey, null, message.getBytes());
     }
 
@@ -96,7 +96,7 @@ public class ClientSideMain extends AmqpChannel {
                 resposta.put("cor", cor);
                 response.put("resposta", resposta);
 
-                sendMessage( "exchange_resposta", "", response.toString());
+                sendMessage( "exchange_resposta", "resposta.send", response.toString());
                 System.out.println("Resposta enviada para o servidor");
 
             }
