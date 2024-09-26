@@ -59,9 +59,19 @@ public class ClientSideMain extends AmqpChannel {
 
                 JSONObject jsonMessage = new JSONObject(message);
 
-                // TODO: Formatar saida de pontuação
                 if (!jsonMessage.has("letter")) {
-                    System.out.println(jsonMessage);
+
+                    JSONObject pontuacoes = jsonMessage.getJSONObject("pontuacoes");
+
+                    for(String jogador : pontuacoes.keySet()) {
+                        int pontuacao = pontuacoes.getInt(jogador);
+                        System.out.println("Jogador " + jogador + " fez " + pontuacao + " pontos.");
+                    }
+
+                    JSONObject vencedor = jsonMessage.getJSONObject("vencedor");
+                    String jogadorVencedor = vencedor.getString("jogador");
+                    System.out.println("Vencedor foi " + jogadorVencedor);
+
                     return;
                 }
 
