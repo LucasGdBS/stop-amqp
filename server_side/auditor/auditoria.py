@@ -64,12 +64,15 @@ def callback(ch, method, properties, body:str):
     logger.info(f'Mensagem recebida a partir da exchange: {method.exchange}, routing_key: {method.routing_key}')
     logger.info(f'Conteúdo da mensagem: {json.dumps(message_data, indent=4)}')
 
-logger.info('Iniciando Auditoria')
+try:
+    logger.info('Iniciando Auditoria')
 
-auditoria = Auditoria('auditoria', callback)
+    auditoria = Auditoria('auditoria', callback)
 
-exchanges = ['exchange_resposta', 'exchange_pontuacao']
-exchange_types = ['topic', 'fanout']
-routing_keys = ['resposta.*', '']
+    exchanges = ['exchange_resposta', 'exchange_pontuacao']
+    exchange_types = ['topic', 'fanout']
+    routing_keys = ['resposta.*', '']
 
-auditoria.start_consuming(exchanges, exchange_types, routing_keys)
+    auditoria.start_consuming(exchanges, exchange_types, routing_keys)
+except KeyboardInterrupt:
+    logger.info('Finalizando Auditoria')
