@@ -36,7 +36,7 @@ class AmqpServer(AmqpChanel):
             routing_key='',
             body=json.dumps(message)
         )
-        # TODO: formatar saida dos resultados
+
         if 'vencedor' in message:
             for jogador, pontuacao in message['pontuacoes'].items():
                 print(f'Jogador {jogador} fez {pontuacao} pontos.')
@@ -44,7 +44,7 @@ class AmqpServer(AmqpChanel):
             vencedor = message['vencedor']['jogador']
             print(f"Vencedor foi {vencedor}")
             return
-        print(f'A letra torteada foi: {message["letter"]}')
+        print(f'A letra sorteada foi: {message["letter"]}')
 
 
 respostas = []
