@@ -46,8 +46,8 @@ class AmqpServer(AmqpChanel):
             return
         print(f'A letra torteada foi: {message["letter"]}')
 
-respostas = []
 
+respostas = []
 def callback(ch, method, properties, body:str):
     message = body.decode("utf-8")
     resposta = json.loads(message)
@@ -79,6 +79,7 @@ def callback(ch, method, properties, body:str):
                 }
             }
             server.send_message(resultado)
+            respostas.clear()
             server.chanel.stop_consuming()
 
 
