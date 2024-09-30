@@ -2,6 +2,8 @@ from config.amqp_chanel import AmqpChanel
 from typing import Callable, Any, Dict
 import json
 from adedonha import Adedonha
+from pika.exceptions import ChannelClosedByBroker, ChannelWrongStateError
+import uuid
 
 
 class AmqpServer(AmqpChanel):
@@ -9,33 +11,39 @@ class AmqpServer(AmqpChanel):
         super().__init__()
 
         self.callback = callback
-        self.queue = queue
+        self.queue_sufix = str(uuid.uuid4())[:8]
+        self.queue = queue + self.queue_sufix
         self.exchange = 'exchange_pontuacao' # Nome da exchange que será utilizada para enviar as mensagens
+
 
     def set_queue(self):
         self.chanel.queue_declare(queue=self.queue, durable=True, auto_delete=True)
 
     def set_consume(self):
         self.set_queue()
+        print(f"Consumindo a fila '{self.queue}'")
         self.chanel.basic_consume(
             queue=self.queue,
             on_message_callback=self.callback,
             auto_ack=True
         )
 
+    def bind_queue(self, exchange:str, routing_key:str):
+        self.chanel.queue_bind(
+            exchange=exchange,
+            queue=self.queue,
+            routing_key=routing_key
+        )
+
     def start_consuming(self):
         print("Jogo iniciado!\nAguardando jogadores...")
         self.set_consume()
+        self.bind_queue('exchange_resposta', f'resposta.send.{self.queue_sufix}')
+
         self.chanel.start_consuming()
 
     def send_message(self, message:Dict):
         self.chanel.exchange_declare(exchange=self.exchange, exchange_type='fanout')
-
-        self.chanel.basic_publish(
-            exchange=self.exchange,
-            routing_key='',
-            body=json.dumps(message)
-        )
 
         if 'vencedor' in message:
             for jogador, pontuacao in message['pontuacoes'].items():
@@ -43,8 +51,21 @@ class AmqpServer(AmqpChanel):
 
             vencedor = message['vencedor']['jogador']
             print(f"Vencedor foi {vencedor}")
-            return
-        print(f'A letra sorteada foi: {message["letter"]}')
+
+            self.chanel.basic_publish(
+                exchange=self.exchange,
+                routing_key='',
+                body=json.dumps(message)
+            )
+        else:
+            print(f'A letra sorteada foi: {message["letter"]}')
+            message['sufix'] = self.queue_sufix
+
+            self.chanel.basic_publish(
+                exchange=self.exchange,
+                routing_key='',
+                body=json.dumps(message)
+            )
 
 
 respostas = []

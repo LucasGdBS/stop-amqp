@@ -9,9 +9,11 @@ class AmqpChanel:
         self.__virtual_host = config('VIRTUAL_HOST')
         self.__username = config('RABBIT_USERNAME')
         self.__password = config('PASSWORD')
-        self.chanel = self.__create_chanel()
+        self.connection = self.__create_connection()  # Mantém a conexão ativa
+        self.chanel = self.__create_channel()  # Cria o canal
 
-    def __create_chanel(self):
+    def __create_connection(self):
+        # Método para criar a conexão
         connection_parameters = pika.ConnectionParameters(
             host=self.__host,
             port=self.__port,
@@ -21,5 +23,16 @@ class AmqpChanel:
                 password=self.__password,
             ),
         )
+        return pika.BlockingConnection(connection_parameters)
 
-        return pika.BlockingConnection(connection_parameters).channel()
+    def __create_channel(self):
+        # Método para criar o canal a partir da conexão
+        return self.connection.channel()
+
+    def reopen_channel(self):
+        '''
+        Método para reabrir o canal, caso ele tenha sido fechado
+        '''
+        if self.chanel.is_closed:  # Verifica se o canal está fechado
+            print("Reabrindo o canal...")
+            self.chanel = self.__create_channel()  # Reabre o canal

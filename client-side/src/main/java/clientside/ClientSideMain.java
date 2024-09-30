@@ -37,9 +37,9 @@ public class ClientSideMain extends AmqpChannel {
         channel.basicConsume(queueName, true, callback, consumerTag -> {});
     }
 
-    public void sendMessage(String exchangeName, String routingKey, String message) throws IOException {
+    public void sendMessage(String queueName, String exchangeName, String routingKey, String message) throws IOException {
         setExchange(exchangeName, "topic");
-        bindQueueToExchange("response_queue", exchangeName, routingKey);
+        bindQueueToExchange(queueName, exchangeName, routingKey);
         channel.basicPublish(exchangeName, routingKey, null, message.getBytes());
     }
 
@@ -74,7 +74,7 @@ public class ClientSideMain extends AmqpChannel {
 
                     return;
                 }
-
+                String sufix = jsonMessage.getString("sufix");
                 String letra = jsonMessage.getString("letter");
                 System.out.println("Letra sorteada: " + letra);
 
@@ -96,7 +96,7 @@ public class ClientSideMain extends AmqpChannel {
                 resposta.put("cor", cor);
                 response.put("resposta", resposta);
 
-                sendMessage( "exchange_resposta", "resposta.send", response.toString());
+                sendMessage("response_queue" + sufix, "exchange_resposta", "message.send"+sufix, response.toString());
                 System.out.println("Resposta enviada para o servidor");
 
             }

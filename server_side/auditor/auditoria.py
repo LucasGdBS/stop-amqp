@@ -71,7 +71,7 @@ try:
 
     exchanges = ['exchange_resposta', 'exchange_pontuacao']
     exchange_types = ['topic', 'fanout']
-    routing_keys = ['resposta.*', '']
+    routing_keys = ['resposta.#', '']
 
     auditoria.start_consuming(exchanges, exchange_types, routing_keys)
 except KeyboardInterrupt:
