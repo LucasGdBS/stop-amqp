@@ -47,7 +47,8 @@ O sistema utiliza RabbitMQ para gerenciar a troca de mensagens entre os componen
 - **Fila de Auditoria**: Todas as mensagens trocadas, incluindo respostas e pontuações, são roteadas para essa fila para fins de auditoria.
 
 ### 2.3 Diagrama do Fluxo
-_(Insira aqui um diagrama que ilustre o fluxo de mensagens, se necessário)_
+![Fluxograma STOPMQ (1)](https://github.com/user-attachments/assets/9518c4db-9857-43cc-a22a-1241ba2921a2)
+
 
 ## 3. Fluxo de Comunicação e Operação
 
