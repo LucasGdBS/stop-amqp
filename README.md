@@ -1,32 +1,60 @@
-# Stop-amqp
-Este projeto implementa um jogo onde os jogadores se conectam a um servidor usando RabbitMQ para enviar respostas e comandos de "Stop". O servidor processa as respostas, calcula as pontuações e transmite o comando de "Stop" para todos os jogadores e para um cliente de auditoria.
+# Stop-AMQP
 
-## Componentes
-### 1. Cliente (Jogadores)
-- Cada jogador se conecta ao servidor via RabbitMQ.
-- As respostas dos jogadores são enviadas em formato JSON para o servidor.
-- O comando de "Stop", enviado por qualquer jogador, encerra a rodada para todos os participantes.
-- Mensagens de resposta e comandos de "Stop" são publicadas em filas específicas para o servidor processar.
-### 2. Servidor
-- Processa as respostas enviadas pelos jogadores.
-- Calcula a pontuação de cada resposta e envia de volta ao jogador correspondente.
-- Transmite o comando de "Stop" para todos os jogadores através de uma fila de broadcast.
-- Envia todas as mensagens trocadas (respostas, pontuações, comandos) para o cliente de auditoria.
-### 3. Cliente de Auditoria
-Inscrito em todas as filas de mensagens dos jogadores e do servidor.
-Registra todas as mensagens (respostas, comandos de "Stop", pontuações) em um log para auditoria.
-Implementação com RabbitMQ
-##### Exchanges
-- Topic Exchange: Usada para cada jogador enviar suas respostas ao servidor.
-- Fanout Exchange: Usada para o comando de "Stop" ser enviado para todos os jogadores.
-- Topic Exchange: Usada para o servidor enviar a pontuação para cada jogador.
+**Stop-AMQP** é um jogo baseado no clássico "Stop", onde jogadores se conectam a um servidor usando **RabbitMQ** para enviar respostas e o comando de "Stop" para encerrar a rodada. O servidor processa as respostas, calcula pontuações e envia de volta para os jogadores, com todas as interações registradas por um cliente de auditoria.
 
-#### Filas
-- Uma fila para cada jogador enviar suas respostas ao servidor.
-- Uma fila para cada jogador receber suas pontuações.
-- Uma fila de broadcast para o comando de "Stop" ser recebido por todos os jogadores.
-- Uma fila de auditoria que roteia todas as mensagens para registro.
-#### Fluxo de Mensagens
-- Cada jogador envia sua resposta através de uma Direct Exchange.
-- O servidor processa as respostas, calcula as pontuações e as publica nas filas correspondentes dos jogadores.
-- Quando qualquer jogador envia o comando de "Stop", o servidor o distribui para
+## Funcionalidades
+- Troca de mensagens em tempo real com RabbitMQ.
+- Processamento e cálculo de pontuações.
+- Registro completo de todas as mensagens trocadas para auditoria.
+  
+## Tecnologias
+- **Python 3.x**
+- **RabbitMQ**
+- **pika**: Biblioteca Python para integração com RabbitMQ.
+
+## Instalação
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/LucasGdBS/stop-amqp.git
+   ```
+2. **Instale as dependências:**
+   ```bash
+   pip install pika
+   ```
+
+3. **Configure e inicie o RabbitMQ:**
+   ```bash
+   sudo service rabbitmq-server start
+   ```
+
+## Execução
+### Servidor
+Para iniciar o servidor:
+```bash
+python server.py
+```
+
+### Jogadores
+Para cada jogador:
+```bash
+python client.py
+```
+
+### Cliente Auditor
+Para iniciar o cliente auditor:
+```bash
+python audit_client.py
+```
+
+## Estrutura do Projeto
+- **server.py**: Gerencia as respostas dos jogadores, calcula as pontuações e distribui o comando "Stop".
+- **client.py**: Cada jogador envia respostas e recebe pontuações.
+- **audit_client.py**: Registra todas as interações entre o servidor e os jogadores para auditoria.
+
+## Melhorias Futuras
+- **Persistência**: Integração com banco de dados.
+- **Interface gráfica** para facilitar a interação dos jogadores.
+- **Escalabilidade** para suportar múltiplas rodadas simultâneas.
+
+## Licença
+Este projeto está licenciado sob a licença MIT.
