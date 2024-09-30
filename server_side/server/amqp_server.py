@@ -2,7 +2,6 @@ from config.amqp_chanel import AmqpChanel
 from typing import Callable, Any, Dict
 import json
 from adedonha import Adedonha
-from pika.exceptions import ChannelClosedByBroker, ChannelWrongStateError
 import uuid
 
 
