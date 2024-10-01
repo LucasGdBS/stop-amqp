@@ -18,7 +18,7 @@ class Auditoria(AmqpChanel):
         self.queue = queue
 
     def set_queue(self):
-        self.chanel.queue_declare(queue=self.queue, durable=True, auto_delete=True)
+        self.chanel.queue_declare(queue=self.queue, durable=True, auto_delete=False)
 
     def set_exchange(self, exchange:str, exchange_type:str):
         self.chanel.exchange_declare(
